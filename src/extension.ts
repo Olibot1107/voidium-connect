@@ -152,6 +152,12 @@ const addPanel = async () => {
 	vscode.workspace.getConfiguration("pterodactyl-vsc").update("apiKey", apiKey)
 
 	log("Connected successfully, " + json.data.length + " servers found")
+
+	// Debug: Log all available servers
+	json.data.forEach((server: any, index: number) => {
+		log(`Server ${index}: Name="${server.attributes.name}", Identifier="${server.attributes.identifier}", UUID="${server.attributes.uuid}"`)
+	})
+
 	const selectedServer = await vscode.window.showQuickPick(json.data.map((server: any) => ({
 		label: server.attributes.name,
 		description: server.attributes.identifier,
@@ -160,19 +166,28 @@ const addPanel = async () => {
 	} as ServerOption)), {
 		placeHolder: "Select a server to load into VS Code..."
 	})
-	if (!selectedServer) return
+	if (!selectedServer) {
+		log("User cancelled server selection")
+		return
+	}
 
 	const server = (selectedServer as unknown as ServerOption).server
+	log(`Selected server: Name="${server.attributes.name}", Identifier="${server.attributes.identifier}", UUID="${server.attributes.uuid}"`)
+
 	serverApiUrl = panelUrl.scheme + "://" + panelUrl.authority + "/api/client/servers/" + server.attributes.identifier + "/files"
 	authHeader = "Bearer " + apiKey
 	log("Setting server api URL & auth header to " + serverApiUrl)
+	log("Using server identifier: " + server.attributes.identifier)
 
 	vscode.workspace.getConfiguration("pterodactyl-vsc").update("panelUrl", panelUrl.scheme + "://" + panelUrl.authority)
 	vscode.workspace.getConfiguration("pterodactyl-vsc").update("serverId", server.attributes.identifier)
 
+	const workspaceName = "Pterodactyl - " + server.attributes.name
+	log("Setting workspace name to: " + workspaceName)
+
 	vscode.workspace.updateWorkspaceFolders(0, 0, {
 		uri: vscode.Uri.parse("pterodactyl:/"),
-		name: "Pterodactyl - " + server.attributes.name
+		name: workspaceName
 	})
 
 	vscode.commands.executeCommand('setContext', 'pterodactyl-connected', true)
