@@ -15,6 +15,10 @@ const log = (message: string): void => outputChannel.appendLine(message)
 const proxyUrl = (url: string): string => vscode.workspace.getConfiguration("pterodactyl-vsc").get("proxyUrl") + encodeURIComponent(url)
 const removeStartSlash = (path: string): string => path.replace(/^\//, "")
 
+interface ServerOption extends vscode.QuickPickItem {
+	server: any
+}
+
 class PterodactylTreeItem extends vscode.TreeItem {
 	constructor(
 		public readonly label: string,
@@ -148,25 +152,27 @@ const addPanel = async () => {
 	vscode.workspace.getConfiguration("pterodactyl-vsc").update("apiKey", apiKey)
 
 	log("Connected successfully, " + json.data.length + " servers found")
-	const serverId: any = await vscode.window.showQuickPick(json.data.map((server: any) => ({
+	const selectedServer = await vscode.window.showQuickPick(json.data.map((server: any) => ({
 		label: server.attributes.name,
 		description: server.attributes.identifier,
-		detail: server.attributes.description
-	})), {
+		detail: server.attributes.description,
+		server: server
+	} as ServerOption)), {
 		placeHolder: "Select a server to load into VS Code..."
 	})
-	if (!serverId) return
+	if (!selectedServer) return
 
-	serverApiUrl = panelUrl.scheme + "://" + panelUrl.authority + "/api/client/servers/" + serverId.description + "/files"
+	const server = (selectedServer as unknown as ServerOption).server
+	serverApiUrl = panelUrl.scheme + "://" + panelUrl.authority + "/api/client/servers/" + server.attributes.identifier + "/files"
 	authHeader = "Bearer " + apiKey
 	log("Setting server api URL & auth header to " + serverApiUrl)
 
 	vscode.workspace.getConfiguration("pterodactyl-vsc").update("panelUrl", panelUrl.scheme + "://" + panelUrl.authority)
-	vscode.workspace.getConfiguration("pterodactyl-vsc").update("serverId", serverId.description)
+	vscode.workspace.getConfiguration("pterodactyl-vsc").update("serverId", server.attributes.identifier)
 
 	vscode.workspace.updateWorkspaceFolders(0, 0, {
 		uri: vscode.Uri.parse("pterodactyl:/"),
-		name: "Pterodactyl - " + json.data.find((server: any) => server.attributes.identifier == serverId.description)?.attributes.name
+		name: "Pterodactyl - " + server.attributes.name
 	})
 
 	vscode.commands.executeCommand('setContext', 'pterodactyl-connected', true)
