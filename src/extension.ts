@@ -110,6 +110,9 @@ const validatePanelURL = (value: string): string | undefined => {
 const addPanel = async () => {
 	const configuredUrl = vscode.workspace.getConfiguration("pterodactyl-vsc").get("panelUrl")
 	const url = configuredUrl && typeof configuredUrl === "string" && configuredUrl.trim() ? configuredUrl : "https://hosting.voidium.uk"
+	if (!configuredUrl) {
+		vscode.workspace.getConfiguration("pterodactyl-vsc").update("panelUrl", url)
+	}
 	const panelUrl = vscode.Uri.parse(url)
 
 	let apiKey: string | undefined = vscode.workspace.getConfiguration("pterodactyl-vsc").get("apiKey")
