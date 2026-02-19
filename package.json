@@ -5,8 +5,8 @@
 	"version": "1.3.8",
 	"publisher": "Olibot1107",
 	"license": "MIT",
-	"main": "./out/src/extension",
-	"browser": "./out/src/extension",
+	"main": "./out/src/extension.js",
+	"browser": "./out/src/extension.js",
 	"extensionKind": [
 		"workspace"
 	],
@@ -18,7 +18,8 @@
 	],
 	"qna": false,
 	"activationEvents": [
-		"onFileSystem:pterodactyl"
+		"onFileSystem:pterodactyl",
+		"onCommand:pterodactyl-vsc.init"
 	],
 	"keywords": [
 		"pterodactyl",
@@ -81,8 +82,7 @@
 		"menus": {
 			"commandPalette": [
 				{
-					"command": "pterodactyl-vsc.init",
-					"when": "workbenchState != workspace"
+					"command": "pterodactyl-vsc.init"
 				},
 				{
 					"command": "pterodactyl-vsc.reset",
@@ -126,16 +126,15 @@
 			"properties": {
 				"pterodactyl-vsc.panelUrl": {
 					"type": "string",
-					"default": "",
-					"description": "Pterodactyl panel URL to connect to.",
+					"default": "https://voidium.uk",
+					"description": "Panel URL (hard-coded to https://voidium.uk by the extension).",
 					"format": "uri"
 				},
 				"pterodactyl-vsc.apiKey": {
 					"type": "string",
 					"default": "",
 					"description": "Client API key for the Voidium Hosting panel, found in Account Settings -> API Credentials.",
-					"minLength": 48,
-					"maxLength": 48
+					"minLength": 32
 				},
 				"pterodactyl-vsc.serverId": {
 					"type": "string",
@@ -148,8 +147,8 @@
 				},
 				"pterodactyl-vsc.proxyUrl": {
 					"type": "string",
-					"default": "https://pterodactyl-vsc.tomatocake.workers.dev/?url=",
-					"description": "CORS proxy to use. Leave empty to disable.",
+					"default": "",
+					"description": "Optional proxy URL prefix (e.g. https://example.com/?url=). Leave empty for direct requests.",
 					"pattern": "^(https?://.+)?$"
 				}
 			}
@@ -157,9 +156,11 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
+		"compile": "npm run bundle",
+		"bundle": "esbuild src/extension.ts --bundle --platform=node --format=cjs --external:vscode --outfile=out/src/extension.js --sourcemap",
+		"typecheck": "tsc -p ./ --noEmit",
 		"lint": "eslint .",
-		"watch": "tsc -watch -p ./",
+		"watch": "npm run bundle -- --watch",
 		"pack": "vsce pack -o ./out/pterodactyl-vsc.vsix -t web",
 		"pack-files": "vsce ls",
 		"--comment-publish": "https://dev.azure.com/tomatocake/_usersSettings/tokens",
@@ -175,6 +176,7 @@
 		"@types/vscode": "^1.92.0",
 		"@typescript-eslint/parser": "^8.3.0",
 		"@vscode/vsce": "^3.0.0",
+		"esbuild": "^0.25.10",
 		"eslint": "^9.9.1",
 		"eslint-plugin-sonarjs": "^1.0.4",
 		"eslint-plugin-unicorn": "^55.0.0",

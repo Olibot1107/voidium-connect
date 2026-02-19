@@ -8,8 +8,7 @@
             "request": "launch",
             "runtimeExecutable": "${execPath}",
             "args": [
-                "--extensionDevelopmentPath=${workspaceRoot}",
-                "--extensionDevelopmentKind=web"
+                "--extensionDevelopmentPath=${workspaceRoot}"
             ],
             "sourceMaps": true,
             "outFiles": [
