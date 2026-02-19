@@ -2,7 +2,7 @@
 	"name": "voidium-vsc",
 	"displayName": "Voidium Hosting",
 	"description": "Open a Voidium Hosting server as a remote workspace.",
-	"version": "1.3.8",
+	"version": "1.3.9",
 	"publisher": "Olibot1107",
 	"license": "MIT",
 	"main": "./out/src/extension.js",
