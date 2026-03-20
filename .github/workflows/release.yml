@@ -1,0 +1,58 @@
+name: Build and release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    name: Build and release VSIX
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compile extension
+        run: npm run bundle
+
+      - name: Pack VSIX
+        run: npm run pack
+
+      - name: Read package version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub release
+        id: release
+        uses: actions/create-release@v1
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          release_name: v${{ steps.version.outputs.version }}
+          draft: false
+          prerelease: false
+
+      - name: Upload VSIX asset
+        uses: actions/upload-release-asset@v2
+        with:
+          upload_url: ${{ steps.release.outputs.upload_url }}
+          asset_path: ./out/pterodactyl-vsc.vsix
+          asset_name: voidium-vsc-${{ steps.version.outputs.version }}.vsix
+          asset_content_type: application/octet-stream

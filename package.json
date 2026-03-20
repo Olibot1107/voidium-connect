@@ -74,8 +74,18 @@
 				"category": "Voidium"
 			},
 			{
+				"command": "pterodactyl-vsc.logout",
+				"title": "Sign out of Voidium Hosting",
+				"category": "Voidium"
+			},
+			{
 				"command": "pterodactyl-vsc.openPanel",
 				"title": "Open Panel",
+				"category": "Voidium"
+			},
+			{
+				"command": "pterodactyl-vsc.onboarding",
+				"title": "Show Voidium onboarding tips",
 				"category": "Voidium"
 			}
 		],
@@ -97,8 +107,15 @@
 					"when": "workbenchState == workspace"
 				},
 				{
+					"command": "pterodactyl-vsc.onboarding"
+				},
+				{
 					"command": "pterodactyl-vsc.openPanel",
 					"when": "workbenchState == workspace"
+				},
+				{
+					"command": "pterodactyl-vsc.logout",
+					"when": "pterodactyl-connected"
 				}
 			]
 		},

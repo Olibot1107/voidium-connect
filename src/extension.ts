@@ -9,6 +9,7 @@ import {PanelService} from "./panel"
 import {createRuntimeState, clearRuntimeState, hydrateRuntimeState} from "./state"
 import {StatusBarController} from "./statusBar"
 import {PterodactylTreeDataProvider, PterodactylTreeDragAndDropController} from "./treeView"
+import {logoutOfVoidium, showOnboardingGuidance} from "./account"
 
 const noop = (): void => {}
 
@@ -154,4 +155,14 @@ export const activate = (context: vscode.ExtensionContext): void => {
 		const serverUrl = `${panelUrl}/server/${serverId}`
 		void vscode.env.openExternal(vscode.Uri.parse(serverUrl))
 	}))
+
+	context.subscriptions.push(vscode.commands.registerCommand("pterodactyl-vsc.logout", () => {
+		void logoutOfVoidium(state, log)
+	}))
+
+	context.subscriptions.push(vscode.commands.registerCommand("pterodactyl-vsc.onboarding", () => {
+		void showOnboardingGuidance(context, {force: true})
+	}))
+
+	void showOnboardingGuidance(context)
 }
