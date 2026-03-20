@@ -50,7 +50,7 @@ jobs:
           prerelease: false
 
       - name: Upload VSIX asset
-        uses: actions/upload-release-asset@v2
+        uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.release.outputs.upload_url }}
           asset_path: ./out/pterodactyl-vsc.vsix
