@@ -46,7 +46,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const core = require("@actions/core")
             const tag = `v${{ steps.version.outputs.version }}`
 
             try {
