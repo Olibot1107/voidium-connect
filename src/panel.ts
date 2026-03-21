@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 
-import {buildServerApiUrl, getPanelUrl, proxyUrl, setApiKey, setPanelUrl, setServerId} from "./config"
+import {buildServerApiUrl, getPanelUrl, normalizePanelUrl, proxyUrl, setApiKey, setPanelUrl, setServerId} from "./config"
 import type {createLogger} from "./logger"
 import {connectRuntimeState, type RuntimeState} from "./state"
 
@@ -49,7 +49,13 @@ export class PanelService {
 	public async addPanel(): Promise<void> {
 		try {
 			const panelUrl = getPanelUrl()
-			await setPanelUrl(panelUrl)
+			const normalizedPanelUrl = normalizePanelUrl(panelUrl) ?? panelUrl
+			if (!normalizedPanelUrl) {
+				void vscode.window.showErrorMessage("Panel URL is invalid")
+				return
+			}
+
+			await setPanelUrl(normalizedPanelUrl)
 
 			let apiKey = vscode.workspace.getConfiguration("pterodactyl-vsc").get<string>("apiKey")
 			if (!apiKey) {
@@ -77,8 +83,13 @@ export class PanelService {
 				apiKey = normalizedApiKey
 			}
 
-			const parsedPanelUrl = vscode.Uri.parse(panelUrl)
-			const panelRootUrl = `${parsedPanelUrl.scheme}://${parsedPanelUrl.authority}`
+			const parsedPanelUrl = vscode.Uri.parse(normalizedPanelUrl)
+			if (!parsedPanelUrl.scheme || !parsedPanelUrl.authority) {
+				void vscode.window.showErrorMessage("Panel URL must include a scheme and authority (e.g. https://voidium.uk).")
+				return
+			}
+
+			const panelRootUrl = normalizedPanelUrl
 			this.log(`Connecting to ${panelRootUrl}...`)
 
 			let response: Response
