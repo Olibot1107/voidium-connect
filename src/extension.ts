@@ -6,6 +6,7 @@ import {buildServerApiUrl, getPanelUrl, getServerId, setApiKey} from "./config"
 import {PterodactylFileSystemProvider} from "./fsProvider"
 import {createLogger} from "./logger"
 import {PanelService} from "./panel"
+import {GitRepoUpdater} from "./updater"
 import {createRuntimeState, clearRuntimeState, hydrateRuntimeState} from "./state"
 import {StatusBarController} from "./statusBar"
 import {PterodactylTreeDataProvider, PterodactylTreeDragAndDropController} from "./treeView"
@@ -21,6 +22,7 @@ export const activate = (context: vscode.ExtensionContext): void => {
 	hydrateRuntimeState(state)
 
 	const statusBarController = new StatusBarController({state, log})
+	const updater = new GitRepoUpdater(context, log, context.extension.packageJSON.version as string)
 	let refreshTree = noop
 	const panelService = new PanelService({
 		state,
@@ -30,6 +32,8 @@ export const activate = (context: vscode.ExtensionContext): void => {
 			statusBarController.requestRefresh()
 		}
 	})
+	updater.initialize()
+	context.subscriptions.push(updater)
 
 	const fsProvider = new PterodactylFileSystemProvider({
 		state,
@@ -142,6 +146,10 @@ export const activate = (context: vscode.ExtensionContext): void => {
 		log("API key cleared")
 		void vscode.window.showInformationMessage("API key has been cleared")
 		statusBarController.requestRefresh()
+	}))
+
+	context.subscriptions.push(vscode.commands.registerCommand("pterodactyl-vsc.checkForUpdates", () => {
+		void updater.checkNow(true)
 	}))
 
 	context.subscriptions.push(vscode.commands.registerCommand("pterodactyl-vsc.openPanel", () => {

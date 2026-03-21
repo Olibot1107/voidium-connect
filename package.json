@@ -87,6 +87,11 @@
 				"command": "pterodactyl-vsc.onboarding",
 				"title": "Show Voidium onboarding tips",
 				"category": "Voidium"
+			},
+			{
+				"command": "pterodactyl-vsc.checkForUpdates",
+				"title": "Check for Voidium updates",
+				"category": "Voidium"
 			}
 		],
 		"menus": {
@@ -116,6 +121,9 @@
 				{
 					"command": "pterodactyl-vsc.logout",
 					"when": "pterodactyl-connected"
+				},
+				{
+					"command": "pterodactyl-vsc.checkForUpdates"
 				}
 			]
 		},
@@ -167,6 +175,22 @@
 					"default": "",
 					"description": "Optional proxy URL prefix (e.g. https://example.com/?url=). Leave empty for direct requests.",
 					"pattern": "^(https?://.+)?$"
+				},
+				"pterodactyl-vsc.autoUpdate.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Periodically check the configured GitHub repository for new Voidium Hosting extension releases."
+				},
+				"pterodactyl-vsc.autoUpdate.repository": {
+					"type": "string",
+					"default": "Olibot1107/voidium-vsc",
+					"description": "GitHub repository (owner/name) that publishes the extension releases to monitor."
+				},
+				"pterodactyl-vsc.autoUpdate.checkIntervalMinutes": {
+					"type": "number",
+					"default": 60,
+					"minimum": 5,
+					"description": "Minimum interval, in minutes, between automatic release checks."
 				}
 			}
 		}
