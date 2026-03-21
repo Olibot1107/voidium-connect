@@ -183,7 +183,7 @@
 				},
 				"pterodactyl-vsc.autoUpdate.repository": {
 					"type": "string",
-					"default": "Olibot1107/voidium-vsc",
+					"default": "Olibot1107/voidium-connect",
 					"description": "GitHub repository (owner/name) that publishes the extension releases to monitor."
 				},
 				"pterodactyl-vsc.autoUpdate.checkIntervalMinutes": {

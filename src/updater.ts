@@ -2,7 +2,7 @@ import * as vscode from "vscode"
 
 import type {createLogger} from "./logger"
 
-const DEFAULT_REPOSITORY = "Olibot1107/voidium-vsc"
+const DEFAULT_REPOSITORY = "Olibot1107/voidium-connect"
 const MIN_CHECK_INTERVAL_MINUTES = 5
 const STATE_LAST_CHECK = "pterodactyl-vsc.autoUpdate.lastCheck"
 const STATE_LAST_VERSION = "pterodactyl-vsc.autoUpdate.lastNotifiedVersion"
